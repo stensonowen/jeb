@@ -1,28 +1,30 @@
 
-document.onkeydown = checkKey;
+document.onkeydown = key_down_handler;
 
-const CMD_MAPPINGS = {
-    ArrowLeft:      cmd_skip_back,
-    ArrowRight:     cmd_skip_forward,
-    ArrowUp:        cmd_volume_up,
-    ArrowDown:      cmd_volume_down,
+const TEXT_MAPPINGS = {
+    ArrowLeft:      "Rewind",
+    ArrowRight:     "Forward",
+    ArrowUp:        "Vol+",
+    ArrowDown:      "Vol-",
+    "<":            "Prev",
+    ">":            "Next",
 };
 
-function checkKey(e) {
+function key_down_handler(e) {
+    //e = e || window.event;
 
-    e = e || window.event;
-
-    // ignore modifiers (which are probably intended for the browser)
-    if (e.getModifierState() === true) {
+    // the 'alt' modifier usually signals the browser (e.g. back/forward)
+    if (e.altKey != false) {
         return;
     }
 
-    //console.log(e);
-
-    let func = CMD_MAPPINGS[e.code];
-    if (func != undefined) {
-        func();
+    let text = TEXT_MAPPINGS[e.key];
+    let widget = document.getElementById("command");
+    if (text != undefined) {
+        widget.value = text;
+        // SUBMIT
     }
+
 
 }
 

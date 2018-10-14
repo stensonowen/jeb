@@ -15,10 +15,26 @@
 
     <body style="text-align: center">
         <div style="margin: auto; width: 50%; ">
-            <h3> media selection or something </h3>
+
+            <h3> Choose Content </h3>
             <input type="text" id="media selection" style="width: 100%; text-align: center; font-size: 36px;" autofocus/>
 
+            <br>
+            <br>
+            <br>
+            <hr>
+            <br>
+
+            <h3> Send Command </h3>
+
+            <form action="/cmd" method="post" >
+                <input type="text" name="cmd" id="command">
+                <input type="submit" onclick="window.onbeforeunload=null;" >
+            </form>
+
+
             <h1 id="result" class="big"><br></h1>
+
         </div>
     </body>
 

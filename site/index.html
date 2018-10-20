@@ -8,8 +8,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> title </title>
-        <script src="api.js"></script>
-        <script src="remote.js"></script>
+        <!--
+        <script src="{{ url_for('static', filename='api.js') }}"></script>
+        <script src="{{ url_for('static', filename='remote.js') }}"></script>
+        -->
+        <script src="static/api.js"></script>
     </head>
 
 
@@ -29,9 +32,13 @@
 
             <form action="/cmd" method="post" >
                 <input type="text" name="cmd" id="command">
-                <input type="submit" onclick="window.onbeforeunload=null;" >
+                <input type="submit" >
             </form>
 
+            <div id="demo">
+                <h2>Let AJAX change this text</h2>
+                <button type="button" onclick="send_cmd_2()">Change Content</button>
+            </div>
 
             <h1 id="result" class="big"><br></h1>
 
@@ -61,8 +68,42 @@
 }
 </style>
 
+<script type="module"> 
+    import { send_cmd } from '{{ url_for('static', filename='remote.js') }}';
+    import { hello, foo } from './static/hello.js';
+    //import { send_cmd } from '.{{ url_for('static', filename='remote.js') }}';
+    //import { hello2 } from './static/remote.js';
+    //import { foo } from './static/remote.js';
+    //foo();
+
+    console.log("index.html loading");
+    hello('world');
+    foo();
+</script>
+
 <script>
-    /*
+    //function send_cmd_2() { send_cmd(); }
+    function send_cmd_2() {
+        console.log("hit butt");
+        foo();
+    }
+
+
+        console.log("ran index.html");
+        function _loadDoc() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                document.getElementById("demo").innerHTML = "foo";
+                console.log(this);
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    document.getElementById("demo").innerHTML = xhttp.responseText;
+                }
+            };
+            xhttp.open("GET", "http://127.0.0.1:6969", true);
+            xhttp.send();
+        }
+/*
 $('#here').on('input', function() {
     var input = $(this).val().slice(-1);
     $(this).val(input);
@@ -72,6 +113,6 @@ $('#here').on('input', function() {
     }
     $('#result').text(output);
 });
-*/
-</script>
+ */
+    </script>
 

@@ -1,4 +1,4 @@
 #!/bin/sh
 # FLASK_DEBUG=1
-FLASK_APP=jeb.py flask run --host=0.0.0.0
+FLASK_APP=app.py flask run --host=0.0.0.0
 

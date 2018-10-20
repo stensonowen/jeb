@@ -1,4 +1,14 @@
 
+export function foo() {
+    console.log("cal fo");
+}
+
+console.log("I'm here it me remote");
+
+function loadDoc() {
+    console.log("loaded doc");
+}
+
 document.onkeydown = key_down_handler;
 
 const TEXT_MAPPINGS = {
@@ -28,3 +38,14 @@ function key_down_handler(e) {
 
 }
 
+export function send_cmd(data) {
+    console.log("caled send cmid");
+}
+
+// hello.mjs
+export function hello2(text) {
+    const div = document.createElement('div');
+    div.textContent = `Hello ${text}`;
+    document.body.appendChild(div);
+    console.log("hello'd");
+}

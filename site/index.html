@@ -8,49 +8,93 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> title </title>
-        <!--
-        <script src="{{ url_for('static', filename='api.js') }}"></script>
-        <script src="{{ url_for('static', filename='remote.js') }}"></script>
-        -->
-        <script src="static/api.js"></script>
     </head>
 
 
-    <body style="text-align: center">
+    <body style="text-align: center" id="body">
         <div style="margin: auto; width: 50%; ">
 
             <h3> Choose Content </h3>
-            <input type="text" id="media selection" style="width: 100%; text-align: center; font-size: 36px;" autofocus/>
+            <div>
+                <input type="text" id="selection" style="width: 100%; text-align: center; font-size: 36px;" autofocus/>
+                <button type="button" onclick="play_selection()"> → </button>
+            </div>
 
-            <br>
-            <br>
-            <br>
-            <hr>
-            <br>
+            <br> <br> <br> <hr> <br>
 
             <h3> Send Command </h3>
 
-            <form action="/cmd" method="post" >
-                <input type="text" name="cmd" id="command">
-                <input type="submit" >
-            </form>
-
-            <div id="demo">
-                <h2>Let AJAX change this text</h2>
-                <button type="button" onclick="send_cmd_2()">Change Content</button>
+            <div>
+                <input type="text" id="command">
+                <button type="button" onclick="send_cmd()"> → </button>
             </div>
 
             <h1 id="result" class="big"><br></h1>
-
         </div>
     </body>
 
-    <footer style="text-align: center;"> 
-        license or something
-    </footer>
-
+    <footer style="text-align: center;"> license or something </footer>
 </html>
 
+
+
+<script>
+
+
+    // use KeyboardEvent.key instead of .code to permit combinations
+    // (e.g. '<' instead of 'Shift' + 'Comma')
+const KEY_MAPPINGS = {
+    ArrowLeft:  "seek_back",
+    ArrowRight: "seek_forward",
+    ArrowUp:    "volume_up",
+    ArrowDown:  "volume_down",
+    "<":        "skip_previous",
+    ">":        "skip_next",
+    " ":        "pause",
+};
+
+document.onkeydown = function(e) {
+    //console.log(e);
+
+    // skip browser actions
+    if (e.altKey != false) { return; }
+    // skip text entry
+    if (document.activeElement.id != "body") { return; }
+
+    let text = KEY_MAPPINGS[e.key];
+    if (text != undefined) {
+        document.getElementById("command").value = text;
+        send_cmd(text);
+    }
+}
+
+// submit command in "command" box
+function send_cmd(cmd) {
+    const command = cmd || document.getElementById("command").value;
+    dispatch_request("api/" + command);
+}
+
+// play selection in "content" box
+function play_selection() {
+    const selection = document.getElementById("selection").value;
+    dispatch_request("select", { selection });
+}
+
+// make a request, paying no attention to its success (params are optional)
+function dispatch_request(rel_url, params) {
+    let data = new FormData();
+    for (let k in params) { data.append(k, params[k]); }
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("POST", rel_url, true);
+    xhttp.send(data);
+}
+
+document.getElementById("selection").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") { play_selection(); }
+}, false);
+
+
+</script>
 
 <style>
 .big {
@@ -67,52 +111,3 @@
     text-align: center;
 }
 </style>
-
-<script type="module"> 
-    import { send_cmd } from '{{ url_for('static', filename='remote.js') }}';
-    import { hello, foo } from './static/hello.js';
-    //import { send_cmd } from '.{{ url_for('static', filename='remote.js') }}';
-    //import { hello2 } from './static/remote.js';
-    //import { foo } from './static/remote.js';
-    //foo();
-
-    console.log("index.html loading");
-    hello('world');
-    foo();
-</script>
-
-<script>
-    //function send_cmd_2() { send_cmd(); }
-    function send_cmd_2() {
-        console.log("hit butt");
-        foo();
-    }
-
-
-        console.log("ran index.html");
-        function _loadDoc() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                document.getElementById("demo").innerHTML = "foo";
-                console.log(this);
-                if (this.readyState == 4 && this.status == 200) {
-                    // Typical action to be performed when the document is ready:
-                    document.getElementById("demo").innerHTML = xhttp.responseText;
-                }
-            };
-            xhttp.open("GET", "http://127.0.0.1:6969", true);
-            xhttp.send();
-        }
-/*
-$('#here').on('input', function() {
-    var input = $(this).val().slice(-1);
-    $(this).val(input);
-    var output = "";
-    if (input.toLowerCase() === "i" || input.toUpperCase() === "L" || input === "1") {
-        output = "like as in THE ORDINAL"
-    }
-    $('#result').text(output);
-});
- */
-    </script>
-

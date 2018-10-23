@@ -76,7 +76,9 @@ document.onkeydown = function(e) {
 // submit command in "command" box
 function send_cmd(cmd) {
     const command = cmd || document.getElementById("command").value;
-    dispatch_request("api/" + command);
+    const parts = command.split(" ");
+    const [func, tail] = [parts[0], parts.slice(1)];
+    dispatch_request("api/" + func, { data: tail });
 }
 
 // play selection in "content" box

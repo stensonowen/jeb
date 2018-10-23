@@ -3,58 +3,17 @@
 import dbus
 from typing import Optional
 
-'''
-def get_dbus_pid() -> Optional[int]:
-    try:
-        with open("/tmp/omxplayerdbus.pi.pid") as f:
-            s = f.read().strip()
-            return int(s)
-    except Exception as e:
-        print("Failed to get pid: {}".format(e))
-        # return None
-        raise e
-        '''
-
-# may throw file not found
-def get_dbus_addr() -> str:
-    # for more logic see bus_finder.py:find_address_file
-    # from https://github.com/willprice/python-omxplayer-wrapper (LGPL)
-    return open("/tmp/omxplayerdbus.pi").read().strip()
-
-'''
-def loop_get_dbus_addr() -> str:
-    while True:
-        try:
-            with open("/tmp/omxplayerdbus.pi") as f:
-                s = f.read().split()
-                if ':' in s:
-                    return s
-                else:
-                    raise Exception("Invalid omx pidfile")
-        except Exception as e:
-            print("Failed to get omx pidfile")
-            time.sleep(0.1)
-            '''
-
-
-def init_dbus(addr):
-    omx_str = "org.mpris.MediaPlayer2" # note no trailing '.'
-    dbus_name = omx_str + ".omxplayer"
-    bus = dbus.bus.BusConnection(addr)
-    proxy = bus.get_object(dbus_name, omx_str, introspect=False)
-    intf_root = dbus.Interface(proxy, omx_str)
-    intf_play = dbus.Interface(proxy, omx_str + ".Player")
-    intf_prop = dbus.Interface(proxy, omx_str + ".Properties")
+DBUS = DbusConn()
 
 # cached dbus connection
 class DbusConn:
     def __init__(self):
-        self.bus: dbus.bus.BusConnection = None
+        self.bus = None
         self.proxy = None
-        self.root_iface: dbus.Interface = None
-        self.play_iface: dbus.Interface = None
-        self.prop_iface: dbus.Interface = None
-        self.addr: str = None
+        self.root_iface = None
+        self.play_iface = None
+        self.prop_iface = None
+        self.addr = None
 
     # may throw file not found
     def _get_dbus_addr() -> str:
@@ -67,20 +26,61 @@ class DbusConn:
         omx_str = "org.mpris.MediaPlayer2" # note no trailing '.'
         dbus_name = omx_str + ".omxplayer"
         self.bus = dbus.bus.BusConnection(self.addr)
-        self.proxy = self.bus.get_object(dbus_name, omx_str, introspect=False)
+        self.proxy = self.bus.get_object(dbus_name, "/org/mpris/MediaPlayer2", introspect=False)
         self.root_iface = dbus.Interface(self.proxy, omx_str)
         self.play_iface = dbus.Interface(self.proxy, omx_str + ".Player")
-        self.prop_iface = dbus.Interface(self.proxy, omx_str + ".Properties")
+        self.prop_iface = dbus.Interface(self.proxy, "org.freedesktop.DBus.Properties")
 
     def cache_valid(self) -> bool:
         # TODO I don't think this will work
         return self.addr == _get_dbus_addr()
 
+    # HELPERS
+    def _get_property(self, query):
+        return self.prop_iface.Get(self.play_iface.dbus_interface, query)
+
+    def _get_pos_ns(self) -> int:
+        return self._get_property("Position")
+
+    #def _get_state(self) -> str:
+    #    # Playing | Paused
+    #    return self._get_property("PlaybackStatus")
+
     # ACTIONS
-    def pause():
-        # TODO toggle
-        self.play_iface.Pause()
-        # unpause: self.play_iface.Play()
+    #def pause(self):
+    #    self.play_iface.Pause()
+
+    #def unpause(self):
+    #    self.play_iface.Play()
+
+    #def can_pause(self) -> bool:
+    #    return bool(self._get_property("CanPause"))
+
+    def toggle_pause(self):
+        if self._get_property("PlaybackStatus") == "Playing":   # alt 'Paused'
+            self.play_iface.Pause()
+        else:
+            self.play_iface.Play()
+
+    def seek(self, rel=None):
+        if rel == 0:
+            self.set_pos(0)
+        elif self._get_property("CanSeek"):
+            self.play_iface.Seek(Int64(rel * 1000.0 * 1000.0))
+        else:
+            print("Cannot seek")
+
+    def set_pos(self, pos):
+        timestamp = Int64(pos * 1000.0 * 1000.0)
+        self.play_iface.SetPosition(ObjectPath("/not/used"), timestamp)
+
+    def skip(self, direction):
+        if direction == +1:
+            self.play_iface.Next()
+        elif direction == -1:
+            self.play_iface.Previous()
+        else:
+            print("TODO skip by more than 1 ({}".format(direction))
 
 
 

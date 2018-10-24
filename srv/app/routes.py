@@ -1,6 +1,6 @@
 
 from app import app
-from flask import render_template, request
+from flask import render_template, request, redirect
 
 import requests
 from datetime import datetime
@@ -20,6 +20,9 @@ def api_handle(cmd):
     (api.COMMANDS.get(cmd) or err)()
     return "ack"
 
+@app.route('/license')
+def get_license():
+    return redirect("https://www.gnu.org/licenses/agpl-3.0.en.html", code=302)
 
 @app.route('/ip')
 @app.route('/status')

@@ -1,0 +1,15 @@
+.big {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    border: none;
+    font: normal 60px/1 "Comic Sans MS", cursive, sans-serif;
+    color: black;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+
+.body {
+    text-align: center;
+}
+

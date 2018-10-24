@@ -7,6 +7,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
+        <script src="{{ url_for('static', filename='control.js') }}"></script>
         <title> title </title>
     </head>
 
@@ -43,6 +45,7 @@
 
 <script>
 
+    /*
 
     // use KeyboardEvent.key instead of .code to permit combinations
     // (e.g. '<' instead of 'Shift' + 'Comma')
@@ -72,6 +75,7 @@ document.onkeydown = function(e) {
         send_cmd(text);
     }
 }
+*/
 
 // submit command in "command" box
 function send_cmd(cmd) {
@@ -81,11 +85,13 @@ function send_cmd(cmd) {
     dispatch_request("api/" + func, { data: tail });
 }
 
+/*
 // play selection in "content" box
 function play_selection() {
     const selection = document.getElementById("selection").value;
     dispatch_request("api/select", { selection });
 }
+*/
 
 // make a request, paying no attention to its success (params are optional)
 function dispatch_request(rel_url, params) {
@@ -96,25 +102,12 @@ function dispatch_request(rel_url, params) {
     xhttp.send();
 }
 
+/*
 document.getElementById("selection").addEventListener("keydown", function(e) {
     if (e.key === "Enter") { play_selection(); }
 }, false);
+*/
 
 
 </script>
 
-<style>
-.big {
-    -webkit-box-sizing: content-box;
-    -moz-box-sizing: content-box;
-    box-sizing: content-box;
-    border: none;
-    font: normal 60px/1 "Comic Sans MS", cursive, sans-serif;
-    color: black;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-}
-.body {
-    text-align: center;
-}
-</style>

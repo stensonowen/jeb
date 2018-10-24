@@ -1,9 +1,18 @@
 
 # apt install python3-dbus
-import dbus
+# import dbus # TODO don't you forget about me (don't don't don't don't)
 from typing import Optional
 
-DBUS = DbusConn()
+DBUS = None
+
+def get_dbus():
+    global DBUS
+    if DBUS is None:
+        DBUS = DbusConn()
+        DBUS.refresh()
+    elif DBUS.cache_valid() is False:
+        DBUS.refresh()
+    return DBUS
 
 # cached dbus connection
 class DbusConn:
@@ -82,21 +91,30 @@ class DbusConn:
         else:
             print("TODO skip by more than 1 ({}".format(direction))
 
+    def volume(vol=None):
+        if vol == 0:
+            #if self._player_interface_property('Volume')
+            self.play_iface.Mute()
+            self.play_iface.Unmute()
+        else:
+            target = dbus.Double(10**(vol / 2000.0))
+            self._player_interface_property('Volume', target)
 
 
 COMMANDS = {
-        "seek_back":    lambda: seek(-10),  # seconds
-        "seek_forward": lambda: seek(+10),
-        "seek_start":   lambda: seek(),
-        "volume_up":    lambda: volume(+3), # dB
-        "volume_down":  lambda: volume(-3),
-        "mute":         lambda: volume(),
-        "skip_previous":lambda: skip(-1),
-        "skip_next":    lambda: skip(+1),
-        "pause":        lambda: pause(),
+        "seek_back":    lambda: get_dbus().seek(-10),  # seconds
+        "seek_forward": lambda: get_dbus().seek(+10),
+        "seek_start":   lambda: get_dbus().seek(),
+        "volume_up":    lambda: get_dbus().volume(+3), # dB
+        "volume_down":  lambda: get_dbus().volume(-3),
+        "mute":         lambda: get_dbus().volume(),
+        "skip_previous":lambda: get_dbus().skip(-1),
+        "skip_next":    lambda: get_dbus().skip(+1),
+        "pause":        lambda: get_dbus().pause(),
         # "seek_back:"  lambda(r=-10): seek(r),
         }
 
+'''
 def volume(rel=None):
     if rel:
         print("Pretend I changed the volume relatively by {}".format(rel))
@@ -115,4 +133,4 @@ def skip(direction):
 def pause():
     # maybe add absolute vs toggle option?
     print("Pretend I toggled pause")
-
+'''

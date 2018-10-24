@@ -1,0 +1,10 @@
+[package]
+name = "ip"
+version = "0.1.0"
+authors = ["qj"]
+
+[dependencies]
+tiny_http = "0.6"
+reqwest = "0.8"
+
+

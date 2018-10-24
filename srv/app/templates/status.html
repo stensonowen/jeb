@@ -1,0 +1,25 @@
+<html>
+
+    <head> 
+        Status as of {{ date }} 
+
+        <br>
+
+        Torrent IP address is {{ ip }}
+    </head>
+
+    <body>
+        {% if status.playing %}
+        <h4> Currently playing {{status.current}}" </h4>
+        <p>
+        {{ status.current }} / {{status.duration}}
+        </p>
+        {% else %}
+        <p>
+        Nothing playing.
+        </p>
+        {% endif %}
+    </body>
+
+
+</html>

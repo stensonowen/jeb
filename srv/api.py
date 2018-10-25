@@ -1,11 +1,10 @@
 
-# apt install python3-dbus
 import dbus
-from typing import Optional
+import logging
 
 DBUS = None
 
-def get_dbus():
+def db():
     global DBUS
     if DBUS is None:
         DBUS = DbusConn()
@@ -42,11 +41,14 @@ class DbusConn:
 
     def cache_valid(self) -> bool:
         # TODO I don't think this will work
-        return self.addr == _get_dbus_addr()
+        return self.addr == DbusConn._get_dbus_addr()
 
     # HELPERS
     def _get_property(self, query):
         return self.prop_iface.Get(self.play_iface.dbus_interface, query)
+
+    def _set_property(self, key, value):
+        return self.prop_iface.Set(self.play_iface.dbus_interface, key, value)
 
     def _get_pos_ns(self) -> int:
         return self._get_property("Position")
@@ -65,23 +67,24 @@ class DbusConn:
     #def can_pause(self) -> bool:
     #    return bool(self._get_property("CanPause"))
 
-    def toggle_pause(self):
-        if self._get_property("PlaybackStatus") == "Playing":   # alt 'Paused'
+    def pause(self):    # toggle
+        if self._get_property("PlaybackStatus") == "Playing":
             self.play_iface.Pause()
-        else:
+        else:   # 'Paused'
             self.play_iface.Play()
 
     def seek(self, rel=None):
-        if rel == 0:
+        if rel is None:
             self.set_pos(0)
         elif self._get_property("CanSeek"):
-            self.play_iface.Seek(Int64(rel * 1000.0 * 1000.0))
+            target_ns = dbus.Int64(rel * 1000.0 * 1000.0) # relative
+            self.play_iface.Seek(target_ns)
         else:
             print("Cannot seek")
 
     def set_pos(self, pos):
-        timestamp = Int64(pos * 1000.0 * 1000.0)
-        self.play_iface.SetPosition(ObjectPath("/not/used"), timestamp)
+        timestamp = dbus.Int64(pos * 1000.0 * 1000.0)
+        self.play_iface.SetPosition(dbus.ObjectPath("/not/used"), timestamp)
 
     def skip(self, direction):
         if direction == +1:
@@ -91,26 +94,40 @@ class DbusConn:
         else:
             print("TODO skip by more than 1 ({}".format(direction))
 
-    def volume(vol=None):
+    # no way to check mute status??
+    def mute(self):
+        self.play_iface.Mute()
+        #self.play_iface.Unmute()
+
+    def volume(self, vol=None):
+        cur = dbus.Double(self._get_property("Volume"))
+        print("Current volume is {}".format(cur))
         if vol == 0:
             #if self._player_interface_property('Volume')
             self.play_iface.Mute()
             self.play_iface.Unmute()
         else:
-            target = dbus.Double(10**(vol / 2000.0))
-            self._player_interface_property('Volume', target)
+            #target = dbus.Double(10**(vol / 2000.0))
+            target = dbus.Double(10**(vol / 20.0))
+            #self._player_interface_property('Volume', target)
+            self._set_property("Volume", target)
+
 
 
 COMMANDS = {
-        "seek_back":    lambda: get_dbus().seek(-10),  # seconds
-        "seek_forward": lambda: get_dbus().seek(+10),
-        "seek_start":   lambda: get_dbus().seek(),
-        "volume_up":    lambda: get_dbus().volume(+3), # dB
-        "volume_down":  lambda: get_dbus().volume(-3),
-        "mute":         lambda: get_dbus().volume(),
-        "skip_previous":lambda: get_dbus().skip(-1),
-        "skip_next":    lambda: get_dbus().skip(+1),
-        "pause":        lambda: get_dbus().pause(),
+        "seek_back":    lambda x="-9": db().seek(x),  # seconds
+        "seek_forward": lambda x="+9": db().seek(x),
+        "seek_start":   lambda _     : db().seek(),
+        "seek":         lambda x="0" : db().seek(x),
+        "volume_up":    lambda x="+1": db().volume(x),# TODO unit? dB?
+        "volume_down":  lambda x="-1": db().volume(x),
+        "mute":         lambda _     : db().mute(),   # toggle
+        "skip_previous":lambda x="-1": db().skip(-1),
+        "skip_next":    lambda x="+1": db().skip(+1),
+        "pause":        lambda _     : db().pause(),
+        "quit":         TODO,
+        "chapter next|[rev": TODO,
+        "fwd_text":     TODO,
         # "seek_back:"  lambda(r=-10): seek(r),
         }
 

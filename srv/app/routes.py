@@ -15,9 +15,11 @@ def index():
 
 @app.route('/api/<cmd>', methods=['POST'])
 def api_handle(cmd):
-    cmd = cmd.strip().split(" ")[0] # for now discard tail
-    err = lambda: print("Unknown command '{}'".format(cmd))
-    (api.COMMANDS.get(cmd) or err)()
+    parts = [p.strip() for p in cmd.split(' ', 1)]
+    func = parts[0]     # type: str
+    tail = parts[1] if len(parts) == 2 else None
+    err = lambda _=None: print("Unknown command '{}'".format(cmd))
+    (api.COMMANDS.get(func) or err)(tail)
     return "ack"
 
 @app.route('/license')

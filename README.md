@@ -8,7 +8,7 @@ Local pi-based media server
 * [srv](/srv): pi flask server that controls omxplayer via dbus
 * [site](/site): js frontend with ajax for sending keypresses
 * [fwd](/fwd): c utility to forward text to tv tty (must be suid root)
-* [vm](/vm): torrent vm rust server that reports and controls vpn status
+* [torr](/torr): torrent vm rust server that reports and controls vpn status
 
 
 ## why
@@ -18,7 +18,7 @@ TODO?
 If I'm going to use shitty software I might as well use my own.
 But it doesn't sneak in ads or sneak out personal data so I guess this is better.
 
-Also controlling everything instead of using something generic works slightly better means it's easier to add stuff like controlling my ac or displaying weather or notifications or something.
+Also controlling everything instead of using something generic that works slightly better means it's easier to add stuff like controlling my ac or displaying weather or notifications or something.
 
 
 ## setup

@@ -28,10 +28,10 @@ Python3, Omxplayer
 (Optional) Rust, Virtualbox
 
 ```
-apt install python3-dbus
+apt install libdbus-1-3 python3-dbus
 ```
 ```
-pip3 install flask request
+pip3 install flask request dbus-python
 ```
 ```
 cd fwd

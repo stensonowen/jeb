@@ -1,0 +1,12 @@
+
+# vim swaps
+*.swp
+
+# py artifacts
+__pycache__
+srv/venv
+
+# cargo artifacts
+torr/Cargo.lock
+torr/target
+

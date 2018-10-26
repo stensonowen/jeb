@@ -1,11 +1,11 @@
 
 from app import app
-from flask import render_template, request, redirect
+from flask import render_template, request
 
 import requests
 from datetime import datetime
 
-import api
+#import api
 
 @app.route('/')
 @app.route('/index')
@@ -24,7 +24,8 @@ def api_handle(cmd):
 
 @app.route('/license')
 def get_license():
-    return redirect("https://www.gnu.org/licenses/agpl-3.0.en.html", code=302)
+    url = "https://www.gnu.org/licenses/agpl-3.0.en.html"
+    return flask.redirect(url, code=302)
 
 @app.route('/ip')
 @app.route('/status')
@@ -33,10 +34,7 @@ def report_ips():
 
 def get_ip(addr):
     resp = requests.get(addr)
-    if resp.ok:
-        return resp.text
-    else:
-        return "Failure: " + resp.reason
+    return resp.text if resp.ok else "Failure: {}".format(resp.reason)
 
 def check_ips():
     jebcam = get_ip("https://icanhazip.com")

@@ -4,13 +4,21 @@ import logging
 
 DBUS = None
 
+def try_reset_dbus():
+    # refresh dbus, but maintain correct state on exception
+    # if anything goes wrong DBUS should be None
+    # cache_vaid() and refresh() can throw
+    tmp = DBUS or DbusConn()
+    tmp.refresh()
+    global DBUS
+    DBUS = tmp
+
 def db():
     global DBUS
-    if DBUS is None:
-        DBUS = DbusConn()
-        DBUS.refresh()
-    elif DBUS.cache_valid() is False:
-        DBUS.refresh()
+    # refactor warning: preserve this ordering
+    # don't call cache_valid if DBUS is None
+    if DBUS is None or DBUS.cache_valid() is False:
+        try_reset_dbus()
     return DBUS
 
 # cached dbus connection

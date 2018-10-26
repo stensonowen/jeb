@@ -8,6 +8,7 @@ const KEY_MAPPINGS = {
     ArrowUp:    "volume_up",
     ArrowDown:  "volume_down",
     "m":        "mute",
+    "u":        "unmute",
     "<":        "skip_previous",
     ">":        "skip_next",
     " ":        "pause",

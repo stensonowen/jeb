@@ -95,9 +95,11 @@ class DbusConn:
             print("TODO skip by more than 1 ({}".format(direction))
 
     # no way to check mute status??
-    def mute(self):
-        self.play_iface.Mute()
-        #self.play_iface.Unmute()
+    def mute(self, tgt=True):
+        if tgt:
+            self.play_iface.Mute()
+        else:
+            self.play_iface.Unmute()
 
     def volume(self, vol=None):
         cur = dbus.Double(self._get_property("Volume"))
@@ -108,7 +110,7 @@ class DbusConn:
             self.play_iface.Unmute()
         else:
             #target = dbus.Double(10**(vol / 2000.0))
-            target = dbus.Double(10**(vol / 20.0))
+            target = dbus.Double(10**((vol or 0)/ 20.0))
             #self._player_interface_property('Volume', target)
             self._set_property("Volume", target)
 
@@ -122,12 +124,13 @@ COMMANDS = {
         "volume_up":    lambda x="+1": db().volume(x),# TODO unit? dB?
         "volume_down":  lambda x="-1": db().volume(x),
         "mute":         lambda _     : db().mute(),   # toggle
+        "unmute":       lambda _     : db().mute(False),
         "skip_previous":lambda x="-1": db().skip(-1),
         "skip_next":    lambda x="+1": db().skip(+1),
         "pause":        lambda _     : db().pause(),
-        "quit":         TODO,
-        "chapter next|[rev": TODO,
-        "fwd_text":     TODO,
+        #"quit":         TODO,
+        #"chapter next|[rev": TODO,
+        #"fwd_text":     TODO,
         # "seek_back:"  lambda(r=-10): seek(r),
         }
 

@@ -27,9 +27,9 @@ char* reset_buffer(int dst_tty)
     }
     int width = ws.ws_col / 2 - 1;
     int height = ws.ws_row / 2 - 1;
-    size_t buf_len = width + height;
-    char* buffer = (char*)calloc(1, buf_len + 1);
-    buffer[buf_len+1] = '\0';
+    size_t buf_len = width + height + 1;
+    char* buffer = (char*)calloc(1, buf_len);
+    buffer[buf_len] = '\0';
     memset(buffer, '\n', height);
     memset(buffer+height, ' ', width);
     return buffer;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     size_t clear_len = strlen(CLEAR);
     size_t text_len = strlen(text);
     int buf_len = clear_len + text_len;
-    char* buffer = (char*)calloc(1, buf_len+1);
+    char* buffer = (char*)calloc(1, buf_len);
     strncpy(buffer, CLEAR, clear_len);
     strncpy(buffer+clear_len, text, text_len);
     buffer[buf_len] = '\0';

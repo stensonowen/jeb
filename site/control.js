@@ -1,6 +1,8 @@
 
 // use KeyboardEvent.key instead of .code to permit combinations
 // (e.g. '<' instead of 'Shift' + 'Comma')
+// Tweakable constants are done in python, hence "skip +1" vs "volume_up"
+// This should only invoke entries in /srv/api.py
 const KEY_MAPPINGS = {
     "0":        "seek_start",
     ArrowLeft:  "seek_back",
@@ -8,9 +10,11 @@ const KEY_MAPPINGS = {
     ArrowUp:    "volume_up",
     ArrowDown:  "volume_down",
     "m":        "mute",
-    "u":        "unmute",
-    "<":        "skip_previous",
-    ">":        "skip_next",
+    "M":        "unmute",
+    "s":        "subtitles 1",
+    "S":        "subtitles 0",
+    "<":        "skip -1",
+    ">":        "skip +1",
     " ":        "pause",
 };
 

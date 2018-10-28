@@ -19,7 +19,7 @@ def api_handle(cmd):
     parts = [p.strip() for p in cmd.split(' ', 1)]
     func = parts[0]     # type: str
     tail = parts[1] if len(parts) == 2 else None
-    err = lambda _=None: print("Unknown command '{}'".format(cmd))
+    err = lambda *_: print("Unknown command '{}'".format(cmd))
     (api.COMMANDS.get(func) or err)(tail)
     return "ack"
 
